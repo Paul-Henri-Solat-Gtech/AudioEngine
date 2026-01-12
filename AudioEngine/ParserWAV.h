@@ -33,6 +33,13 @@ struct ChunkFormat
 	//uint64_t SubFormat;
 };
 
+struct ChunkData
+{
+	char ckID[4];
+	uint32_t cksize; 
+	std::vector<uint8_t> sampledData;
+};
+
 struct WaveHeader 
 {
 	WaveFormat wave;
