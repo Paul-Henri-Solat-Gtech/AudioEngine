@@ -51,8 +51,9 @@ class ParserWAV
 public:
 	bool OpenWav(std::string& wavFilePath);
 
-	void PrintWavSummary();
+	bool WriteCopy(std::string& outPath);
 private:
 	WaveHeader header;
+	ChunkData data;
 };
 
