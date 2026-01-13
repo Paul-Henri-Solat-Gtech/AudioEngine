@@ -7,11 +7,12 @@ int main()
     ParserWAV newParserWav;
 
     std::string filePath = "file_example_WAV_10MG.wav";
-    std::string filePathNew = "test.wav";
+    std::string filePathTest = "test.wav";
+    std::string filePathNewCreation = "NewCreation.wav";
 
     newParserWav.OpenWav(filePath);
-
-    newParserWav.WriteCopy(filePathNew);
+    newParserWav.WriteCopy(filePathTest);
+    newParserWav.CreateFile(filePathNewCreation);
 
     std::cout << "Hello World!\n";
 }

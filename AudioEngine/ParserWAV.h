@@ -21,7 +21,7 @@ struct ChunkFormat
 
 	uint16_t wFormatTag;
 	uint16_t nChannels;
-	uint32_t SamplePerSec;
+	uint32_t nSamplePerSec;
 	uint32_t nAvgBytesPerSec;
 	uint16_t nBlockAlign;
 	uint16_t wBitsPerSample;
@@ -50,8 +50,10 @@ class ParserWAV
 {
 public:
 	bool OpenWav(std::string& wavFilePath);
-
 	bool WriteCopy(std::string& outPath);
+
+	bool CreateFile(std::string& fileName);
+	bool CreateFileWAV(std::string& fileName, float totalTime);
 private:
 	WaveHeader header;
 	ChunkData data;
