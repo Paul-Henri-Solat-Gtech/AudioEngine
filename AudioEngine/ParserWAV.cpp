@@ -120,7 +120,7 @@ bool ParserWAV::WriteCopy(std::string& outPath)
 
     fclose(file);
 
-    std::cout << "\nCopy Succesfull !" << header.chunk.ckID << std::endl;
+    std::cout << "\nCopy Succesfull !" << std::endl;
 
     return true;
 }
@@ -145,7 +145,7 @@ bool ParserWAV::CreateFile(std::string& fileName)
     newWaveheader.chunk.wFormatTag = 1; // PCM
     newWaveheader.chunk.nChannels = 1;
     newWaveheader.chunk.nSamplePerSec = 44100;
-    newWaveheader.chunk.nAvgBytesPerSec = 44100 * 2; // 44100 hz
+    newWaveheader.chunk.nAvgBytesPerSec = newWaveheader.chunk.nSamplePerSec * 2; // 44100 hz
     newWaveheader.chunk.nBlockAlign = 2;
     newWaveheader.chunk.wBitsPerSample = 16;
     
@@ -172,7 +172,7 @@ bool ParserWAV::CreateFile(std::string& fileName)
     fwrite(&newWaveheader, sizeof(WaveHeader), 1, file);
 
     // Write Data Chunk
-    fwrite(newChunkData.ckID, 1, 4, file);
+    fwrite(newChunkData.ckID, 4, 1, file);
     fwrite(&newChunkData.cksize, 4, 1, file);
     if (!newChunkData.sampledData.empty()) 
     {
@@ -181,11 +181,11 @@ bool ParserWAV::CreateFile(std::string& fileName)
 
 
     fclose(file);
-    std::cout << "\nCreation Succesfull !" << header.chunk.ckID << std::endl;
+    std::cout << "\nCreation Succesfull !" << std::endl;
     return true;
 }
 
-bool ParserWAV::CreateFileWAV(std::string& fileName, float totalTime)
+bool ParserWAV::CreateFileWAV(std::string& fileName, float totalTime, int numberOfChannels = 1, int samplePerSec = 44100)
 {
     //Fichier vide
     FILE* file = nullptr;
@@ -199,13 +199,14 @@ bool ParserWAV::CreateFileWAV(std::string& fileName, float totalTime)
     memcpy(newWaveheader.wave.ckID, "RIFF", 4);
     newWaveheader.wave.cksize = 36 + 0; // header sans data
     memcpy(newWaveheader.wave.WAVEID, "WAVE", 4);
+
     //Chunk
     memcpy(newWaveheader.chunk.ckID, "fmt ", 4);
     newWaveheader.chunk.cksize = 16; // 16 = PCM standard
     newWaveheader.chunk.wFormatTag = 1; // PCM
-    newWaveheader.chunk.nChannels = 1;
-    newWaveheader.chunk.nSamplePerSec = 44100;
-    newWaveheader.chunk.nAvgBytesPerSec = 44100 * 2; // 44100 hz
+    newWaveheader.chunk.nChannels = numberOfChannels;
+    newWaveheader.chunk.nSamplePerSec = samplePerSec;
+    newWaveheader.chunk.nAvgBytesPerSec = newWaveheader.chunk.nSamplePerSec * 2; // 44100 hz
     newWaveheader.chunk.nBlockAlign = 2;
     newWaveheader.chunk.wBitsPerSample = 16;
 
@@ -216,9 +217,10 @@ bool ParserWAV::CreateFileWAV(std::string& fileName, float totalTime)
     // Test Audio
     const float freq = 440.0f; // 440 hz -> tonalite du tel 
     const float nSamplesPerSec = 44100.0f; // 440 hz -> tonalite du tel 
-
+    
     size_t nSamples = static_cast<size_t>(nSamplesPerSec * totalTime);
     newChunkData.sampledData.resize(nSamples * 2); // 16-bit PCM = 2 bytes par sample
+
     for (size_t i = 0; i < nSamples; ++i)
     {
         int16_t sample = static_cast<int16_t>(0.3f * 32767.0f * sinf(2.0f * 3.14159265f * freq * i / nSamplesPerSec));
@@ -239,8 +241,55 @@ bool ParserWAV::CreateFileWAV(std::string& fileName, float totalTime)
         fwrite(newChunkData.sampledData.data(), 1, newChunkData.cksize, file);
     }
 
+    fclose(file);
+    std::cout << "\nCreation Succesfull !" << std::endl;
+    return true;
+}
+
+void ParserWAV::LocateByteInWav(std::string& fileName, int frameNum)
+{
+    // Ouverture fichier WAV
+    FILE* file = nullptr;
+    errno_t err = fopen_s(&file, fileName.c_str(), "rb");  // rb = read byte
+    if (err != 0 || file == nullptr)
+    {
+        std::cerr << "Impossible d'ouvrir le fichier." << std::endl;
+    }
+
+    // Lecture du header
+    fread(&header.wave, sizeof(WaveFormat), 1, file);
+
+    if (ferror(file))
+    {
+        std::cerr << "Erreur de lecture du header WAVE." << std::endl;
+        fclose(file);
+    }
+    if (std::strncmp(header.wave.ckID, "RIFF", 4) != 0 || std::strncmp(header.wave.WAVEID, "WAVE", 4) != 0)
+    {
+        std::cerr << "Fichier non valide : RIFF/WAVE manquant." << std::endl;
+        fclose(file);
+    }
+
+    // Lecture du Chunk Format (fmt)
+    fread(&header.chunk, sizeof(ChunkFormat), 1, file);
+
+    if (ferror(file))
+    {
+        std::cerr << "Erreur de lecture du chunk WAVE." << std::endl;
+        fclose(file);
+    }
+
+    //search = frameNum + data size
+    fseek(file, frameNum, SEEK_SET);
+
+    // allocate memory to contain the whole file:
+    long size = ftell(file);
+    char* bufferFile = (char*)malloc(sizeof(char) * size);
+
+    fread(bufferFile, header.chunk.cksize, 1,file);
 
     fclose(file);
-    std::cout << "\nCreation Succesfull !" << header.chunk.ckID << std::endl;
-    return true;
+    free(bufferFile);
+
+    std::cout << "\Search Succesfull !" << std::endl;
 }

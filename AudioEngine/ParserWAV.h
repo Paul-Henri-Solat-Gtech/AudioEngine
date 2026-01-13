@@ -53,7 +53,10 @@ public:
 	bool WriteCopy(std::string& outPath);
 
 	bool CreateFile(std::string& fileName);
-	bool CreateFileWAV(std::string& fileName, float totalTime);
+	bool CreateFileWAV(std::string& fileName, float totalTime, int channelNumbers, int samplePerSec);
+
+	void LocateByteInWav(std::string& fileName, int frameNum); //Go to a position in audio and take the value
+
 private:
 	WaveHeader header;
 	ChunkData data;

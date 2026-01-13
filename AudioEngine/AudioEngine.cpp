@@ -8,11 +8,11 @@ int main()
 
     std::string filePath = "file_example_WAV_10MG.wav";
     std::string filePathTest = "test.wav";
-    std::string filePathNewCreation = "NewCreation.wav";
+    std::string filePathNewCreation = "NewCreation2.wav";
 
     newParserWav.OpenWav(filePath);
     newParserWav.WriteCopy(filePathTest);
     newParserWav.CreateFile(filePathNewCreation);
-
-    std::cout << "Hello World!\n";
+    newParserWav.CreateFileWAV(filePathNewCreation,10,1, 44100);
+   // newParserWav.LocateByteInWav()
 }
