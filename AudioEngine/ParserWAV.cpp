@@ -58,12 +58,6 @@ bool ParserWAV::OpenWav(std::string& wavFilePath)
         return false;
     }
 
-    // Non utilisable aujourdhui
-    //std::cout << "Cb Size: " << header.chunk.cbSize << std::endl;
-    //std::cout << "W Valid Bits Per Sample: " << header.chunk.wValidBitsPerSample << std::endl;
-    //std::cout << "Dw Channel Mask: " << header.chunk.dwChannelMask << std::endl;
-    //std::cout << "Sub Format: " << header.chunk.SubFormat << std::endl;
-
     // chunk data for copy
     while (true)
     {
@@ -125,7 +119,7 @@ bool ParserWAV::WriteCopy(std::string& outPath)
     return true;
 }
 
-bool ParserWAV::CreateFile(std::string& fileName)
+bool ParserWAV::CreateFileWAV(std::string& fileName)
 {
     //Fichier vide
     FILE* file = nullptr;

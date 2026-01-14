@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "ParserWAV.h"
+#include "AudioPlayer.h"
 
 int main()
 {
@@ -10,9 +11,14 @@ int main()
     std::string filePathTest = "test.wav";
     std::string filePathNewCreation = "NewCreation2.wav";
 
-    newParserWav.OpenWav(filePath);
-    newParserWav.WriteCopy(filePathTest);
-    newParserWav.CreateFile(filePathNewCreation);
-    newParserWav.CreateFileWAV(filePathNewCreation,10,1, 44100);
-   // newParserWav.LocateByteInWav()
+    //newParserWav.OpenWav(filePathNewCreation);
+    //newParserWav.WriteCopy(filePathTest);
+    //newParserWav.CreateFile(filePathNewCreation);
+    //newParserWav.CreateFileWAV(filePathNewCreation,10,1, 44100);
+    //newParserWav.LocateByteInWav()
+
+    AudioPlayer newAudioPLayer;
+
+    //newAudioPLayer.Xaudio2Init();
+    newAudioPLayer.Xaudio2PlaySound(filePathNewCreation);
 }

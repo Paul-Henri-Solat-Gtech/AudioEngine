@@ -10,8 +10,6 @@ struct WaveFormat
 	char ckID[4]; //riff
 	uint32_t cksize; //4+n
 	char WAVEID[4]; //wave
-
-	//uint32_t WAVEchunks; olptional
 };
 
 struct ChunkFormat
@@ -25,12 +23,6 @@ struct ChunkFormat
 	uint32_t nAvgBytesPerSec;
 	uint16_t nBlockAlign;
 	uint16_t wBitsPerSample;
-
-	//WAVE_FORMAT_EXTENSIBLE
-	//uint16_t cbSize;
-	//uint16_t wValidBitsPerSample;
-	//uint32_t dwChannelMask;
-	//uint64_t SubFormat;
 };
 
 struct ChunkData
@@ -52,10 +44,13 @@ public:
 	bool OpenWav(std::string& wavFilePath);
 	bool WriteCopy(std::string& outPath);
 
-	bool CreateFile(std::string& fileName);
+	bool CreateFileWAV(std::string& fileName);
 	bool CreateFileWAV(std::string& fileName, float totalTime, int channelNumbers, int samplePerSec);
 
 	void LocateByteInWav(std::string& fileName, int frameNum); //Go to a position in audio and take the value
+
+	WaveHeader GetWavHeader() { return header; };
+	ChunkData GetWavData() { return data; };
 
 private:
 	WaveHeader header;
