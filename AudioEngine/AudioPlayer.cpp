@@ -110,7 +110,8 @@ bool AudioPlayer::Xaudio2PlaySound(std::string& wavFilePath)
     // La structure buffer XAudio2 : on lui donne notre buffer + quelques infos------------
     XAUDIO2_BUFFER newBuffer = {};
     newBuffer.pAudioData = reinterpret_cast<BYTE*>(newWav.GetWavData().sampledData.data());
-    newBuffer.AudioBytes = newWav.GetWavData().sampledData.size() * sizeof(uint8_t);
+    //newBuffer.AudioBytes = newWav.GetWavData().sampledData.size() * sizeof(uint8_t);
+    newBuffer.AudioBytes = newWav.GetWavData().cksize;
     newBuffer.Flags = XAUDIO2_END_OF_STREAM;
     //---------------------------------------------------
 
