@@ -110,7 +110,7 @@ bool AudioPlayer::Xaudio2PlaySound(std::string& wavFilePath)
     // La structure buffer XAudio2 : on lui donne notre buffer + quelques infos------------
     XAUDIO2_BUFFER newBuffer = {};
     newBuffer.pAudioData = reinterpret_cast<BYTE*>(newWav.GetWavData().sampledData.data());
-    newBuffer.AudioBytes = newWav.GetWavData().sampledData.size() * newWavWfx.wBitsPerSample; // A CORRIGER
+    newBuffer.AudioBytes = newWav.GetWavData().sampledData.size() * sizeof(uint8_t);
     newBuffer.Flags = XAUDIO2_END_OF_STREAM;
     //---------------------------------------------------
 
@@ -119,10 +119,12 @@ bool AudioPlayer::Xaudio2PlaySound(std::string& wavFilePath)
 
     // Start playing sound
     source_voice->Start();
-
+    std::cout << "\n" << wavFilePath << " Start playing !";
+    float ms = 0;
     //----------------------------update
     while (true) 
     {
+        ms += 1;
         XAUDIO2_VOICE_STATE state;
         source_voice->GetState(&state);
         if (state.BuffersQueued == 0) break;
@@ -134,7 +136,7 @@ bool AudioPlayer::Xaudio2PlaySound(std::string& wavFilePath)
     mp_xaudio2->Release();
     CoUninitialize();
 
-    std::cout << "\nInit Xaudio2 all tasks finished !";
+    std::cout << "\n" << wavFilePath << " Finished playing !" << ms;
 
     return true;
 }

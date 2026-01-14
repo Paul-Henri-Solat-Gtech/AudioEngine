@@ -7,7 +7,7 @@ int main()
 {
     ParserWAV newParserWav;
 
-    std::string filePath = "file_example_WAV_10MG.wav";
+    std::string filePath = "M1F1-Alaw-AFsp.wav";
     std::string filePathTest = "test.wav";
     std::string filePathNewCreation = "NewCreation2.wav";
 
