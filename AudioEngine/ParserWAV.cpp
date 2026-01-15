@@ -21,9 +21,9 @@ bool ParserWAV::OpenWav(std::string& wavFilePath)
         return false;
     }
 
-    std::cout << "Chunk ID(riff): " << header.wave.ckID << std::endl;
+    std::cout << "Chunk ID(riff): " << std::string(header.wave.ckID, 4) << std::endl;
     std::cout << "Size: " << header.wave.cksize << std::endl;
-    std::cout << "WAVE ID: " << header.wave.WAVEID << std::endl;
+    std::cout << "WAVE ID: " << std::string(header.wave.WAVEID,4) << std::endl;
 
     if (std::strncmp(header.wave.ckID, "RIFF", 4) != 0 || std::strncmp(header.wave.WAVEID, "WAVE", 4) != 0)
     {
@@ -34,6 +34,11 @@ bool ParserWAV::OpenWav(std::string& wavFilePath)
 
     // Lecture du Chunk Format (fmt)
     fread(&header.chunk, sizeof(ChunkFormat), 1, file);
+    
+    if (header.chunk.cksize > 16)
+    {
+        fseek(file, header.chunk.cksize - 16, SEEK_CUR);
+    }
 
     if (ferror(file))
     {
@@ -42,7 +47,7 @@ bool ParserWAV::OpenWav(std::string& wavFilePath)
         return false;
     }
 
-    std::cout << "\nChunk ID(fmt): " << header.chunk.ckID << std::endl;
+    std::cout << "\nChunk ID(fmt): " << std::string(header.chunk.ckID,4) << std::endl;
     std::cout << "Size: " << header.chunk.cksize << std::endl;
     std::cout << "Format Tag: " << header.chunk.wFormatTag << std::endl;
     std::cout << "Channels: " << header.chunk.nChannels << std::endl;
@@ -61,7 +66,7 @@ bool ParserWAV::OpenWav(std::string& wavFilePath)
     // chunk data for copy
     while (true)
     {
-        fread(&data.ckID, 4, 1, file);
+        fread(&data.ckID, 1, 4, file);
         fread(&data.cksize, 4, 1, file);
 
         if (ferror(file))
@@ -78,10 +83,18 @@ bool ParserWAV::OpenWav(std::string& wavFilePath)
 
         // Sauter chunk inconnu
         fseek(file, data.cksize, SEEK_CUR);
+        
+        // alignement WAV
+        if (data.cksize & 1)
+        {
+            fseek(file, 1, SEEK_CUR);
+        }
     }
 
-    // Lecture des samples
+    // Allouer le buffer audio
     data.sampledData.resize(data.cksize);
+
+    // Lire les samples
     fread(data.sampledData.data(), 1, data.cksize, file);
 
     if (ferror(file))

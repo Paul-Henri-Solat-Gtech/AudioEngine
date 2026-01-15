@@ -9,14 +9,11 @@
 class AudioPlayer
 {
 public:
-
-	bool Xaudio2Init();
 	bool Xaudio2PlaySound(std::string& wavFilePath);
 
 private:
 
-	// Instance Xaudio
-	IXAudio2* mp_xaudio2 = nullptr;
-
+	// keep sound data in memory
+	std::vector<uint8_t> m_audioBuffer;
 };
 

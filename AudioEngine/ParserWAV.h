@@ -5,6 +5,8 @@
 #include <iostream>
 #include <string>
 
+#pragma pack(push, 1)
+
 struct WaveFormat 
 {
 	char ckID[4]; //riff
@@ -37,6 +39,8 @@ struct WaveHeader
 	WaveFormat wave;
 	ChunkFormat chunk;
 };
+
+#pragma pack(pop)
 
 class ParserWAV
 {
